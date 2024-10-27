@@ -7,17 +7,19 @@ import (
 )
 
 type Capybara struct {
+	id    int
 	Name  string
 	Color string
 }
 
 var capybaras = []Capybara{
-	{Name: "Bobby", Color: "Brown"},
-	{Name: "Cappy", Color: "Gray"},
-	{Name: "Luna", Color: "Biege"},
+	{id: 1, Name: "Bobby", Color: "Brown"},
+	{id: 2, Name: "Cappy", Color: "Gray"},
+	{id: 3, Name: "Luna", Color: "Biege"},
 }
+var nextID = 4
 
-func getAllCapybaras(w http.ResponseWriter, r *http.Request) {
+func getAllCapybaras(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := json.NewEncoder(w).Encode(capybaras); err != nil {
@@ -37,6 +39,8 @@ func addCapybara(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
 		return
 	}
+	newCapybara.id = nextID
+	nextID++
 
 	capybaras = append(capybaras, newCapybara)
 
@@ -45,7 +49,6 @@ func addCapybara(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	capybaras = append(capybaras, Capybara{"Globby", "Black"})
 
 	http.HandleFunc("/capybaras", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
